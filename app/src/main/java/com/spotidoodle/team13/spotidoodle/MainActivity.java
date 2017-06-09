@@ -61,8 +61,10 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-
         Button playlistOne = (Button) findViewById(R.id.button);
+        Button playlisttTwo = (Button) findViewById(R.id.button2);
+        playlistOne.setOnClickListener(onClickListener);
+        playlisttTwo.setOnClickListener(onClickListener);
         playlistOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +72,25 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
             }
         });
     }
+
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+            switch(v.getId()){
+                case R.id.button:
+                    Intent intent = new Intent(MainActivity.this, SortMusicActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("playlist", TEST_PLAYLIST_URI);
+                    bundle.putString("clientID", CLIENT_ID);
+                    bundle.putInt("requestCode", REQUEST_CODE);
+                    intent.putExtras(bundle);
+                    break;
+                case R.id.button2:
+                    //DO something
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -91,6 +112,16 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                     Log.d("Auth error: ", response.getType().toString());
             }
         }
+    }
+
+    private void onButtonClicked() {
+        final Button playlistOne = (Button) findViewById(R.id.button);
+        playlistOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //mPlayer.playUri(mOperationCallback, TEST_PLAYLIST_URI, 0, 0);
+            }
+        });
     }
 
     private void onAuthenticationComplete(AuthenticationResponse authResponse) {
@@ -161,23 +192,8 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
             public void onPlaybackError(Error error) {
             }
         });
-
-        final Button playlistOne = (Button) findViewById(R.id.button2);
-        playlistOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SortMusicActivity.class);
-                //Bundle bundle = new Bundle();
-                //bundle.putSerializable("mPlayer", (Serializable) mPlayer);
-                //intent.putExtra(mPlayer.toString(), mPlayer);
-                //intent.putExtras(bundle);
-                intent.putExtra("playlist", TEST_PLAYLIST_URI);
-                intent.putExtra("clientID", CLIENT_ID);
-                intent.putExtra("requestCode", REQUEST_CODE);
-                //mPlayer.playUri(mOperationCallback, TEST_PLAYLIST_URI, 0, 0);
-            }
-        });
     }
+
     @Override
     public void onLoggedOut() {
         Log.d("MainActivity", "User logged out");

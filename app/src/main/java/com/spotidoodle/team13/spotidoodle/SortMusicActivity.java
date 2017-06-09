@@ -52,7 +52,6 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
             this.REQUEST_CODE = bundle.getInt("requestCode");
             this.playlist = bundle.getString("playlist");
             //Player mPlayer = (Player) bundle.getSerializable("mPlayer");
-
             //mPlayer.playUri(null, playlist, 0, 0);
         }
     }
