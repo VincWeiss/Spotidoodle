@@ -13,22 +13,37 @@ import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
+import com.spotify.sdk.android.player.Connectivity;
 import com.spotify.sdk.android.player.Error;
+import com.spotify.sdk.android.player.Metadata;
+import com.spotify.sdk.android.player.PlaybackBitrate;
+import com.spotify.sdk.android.player.PlaybackState;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
-public class MainActivity extends AppCompatActivity implements
-        SpotifyPlayer.NotificationCallback, ConnectionStateCallback
-{
-    // TODO: Replace with your client ID
+import java.io.Serializable;
+
+public class MainActivity extends AppCompatActivity implements SpotifyPlayer.NotificationCallback, ConnectionStateCallback, Player {
+
     //SHA1 Fingerprint 3D:5B:E8:6A:56:D1:FF:EC:91:AB:A8:27:50:13:A1:A6:85:35:CA:F6
     private static final String CLIENT_ID = "9f703a39b15a4241b08dcea6685e5f50";
-    // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
-
+    private static final String TEST_ALBUM_URI = "spotify:album:2lYmxilk8cXJlxxXmns1IU";
+    private static final String TEST_PLAYLIST_URI = "spotify:user:1139746471:playlist:2Hcu0u9LX7XqNtYlt6iTSM";
     private Player mPlayer;
+    private final Player.OperationCallback mOperationCallback = new Player.OperationCallback() {
+        @Override
+        public void onSuccess() {
+            System.out.println("OK!");
+        }
+
+        @Override
+        public void onError(Error error) {
+            System.out.println("ERROR:" + error);
+        }
+    };
 
     // Request code that will be used to verify if the result comes from correct activity
     // Can be any integer
@@ -46,10 +61,12 @@ public class MainActivity extends AppCompatActivity implements
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
+
         Button playlistOne = (Button) findViewById(R.id.button);
         playlistOne.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                // Perform action on click
+                startActivity(new Intent(MainActivity.this, SortMusicActivity.class));
             }
         });
     }
@@ -57,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
@@ -79,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private void onAuthenticationComplete(AuthenticationResponse authResponse) {
         // Once we have obtained an authorization token, we can proceed with creating a Player.
-        Log.d("myTag", "Got authentication token");
         if (mPlayer == null) {
             Config playerConfig = new Config(getApplicationContext(), authResponse.getAccessToken(), CLIENT_ID);
             // Since the Player is a static singleton owned by the Spotify class, we pass "this" as
@@ -89,18 +104,15 @@ public class MainActivity extends AppCompatActivity implements
             // Spotify.destroyPlayer(), that will definitely result in resource leaks.
             mPlayer = Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
                 @Override
-                public void onInitialized(SpotifyPlayer player) {
-                    Log.d("myTag", "-- Player initialized --");
-                    //mPlayer.setConnectivityStatus(mOperationCallback, getNetworkConnectivity(MainActivity.this));
-                    mPlayer.addNotificationCallback(MainActivity.this);
+                public void onInitialized(SpotifyPlayer spotifyPlayer) {
+                    mPlayer = spotifyPlayer;
                     mPlayer.addConnectionStateCallback(MainActivity.this);
-                    // Trigger UI refresh
-                    //updateView();
+                    mPlayer.addNotificationCallback(MainActivity.this);
                 }
 
                 @Override
-                public void onError(Throwable error) {
-                    error.printStackTrace();
+                public void onError(Throwable throwable) {
+                    Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
                 }
             });
         } else {
@@ -136,9 +148,35 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoggedIn() {
-        Log.d("MainActivity", "User logged in");
+        mPlayer.playUri(mOperationCallback, "spotify:track:6GoNSKDv6eKxuHxn2Zcr9o", 0, 0);
+        mPlayer.addNotificationCallback(new Player.NotificationCallback() {
+            @Override
+            public void onPlaybackEvent(PlayerEvent playerEvent) {
+                if (playerEvent == PlayerEvent.kSpPlaybackNotifyTrackDelivered) {
+                    System.out.println("Delivered");
+                }
+            }
 
-        mPlayer.playUri(null, "spotify:track:4aSon118zcGeJoKINAmiav", 0, 0);
+            @Override
+            public void onPlaybackError(Error error) {
+            }
+        });
+
+        final Button playlistOne = (Button) findViewById(R.id.button2);
+        playlistOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SortMusicActivity.class);
+                //Bundle bundle = new Bundle();
+                //bundle.putSerializable("mPlayer", (Serializable) mPlayer);
+                //intent.putExtra(mPlayer.toString(), mPlayer);
+                //intent.putExtras(bundle);
+                intent.putExtra("playlist", TEST_PLAYLIST_URI);
+                intent.putExtra("clientID", CLIENT_ID);
+                intent.putExtra("requestCode", REQUEST_CODE);
+                //mPlayer.playUri(mOperationCallback, TEST_PLAYLIST_URI, 0, 0);
+            }
+        });
     }
     @Override
     public void onLoggedOut() {
@@ -158,5 +196,115 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionMessage(String message) {
         Log.d("MainActivity", "Received connection message: " + message);
+    }
+
+    @Override
+    public boolean addNotificationCallback(NotificationCallback notificationCallback) {
+        return false;
+    }
+
+    @Override
+    public boolean removeNotificationCallback(NotificationCallback notificationCallback) {
+        return false;
+    }
+
+    @Override
+    public void initialize(Config config) {
+
+    }
+
+    @Override
+    public void destroy() {
+
+    }
+
+    @Override
+    public boolean login(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean logout() {
+        return false;
+    }
+
+    @Override
+    public boolean addConnectionStateCallback(ConnectionStateCallback connectionStateCallback) {
+        return false;
+    }
+
+    @Override
+    public boolean removeConnectionStateCallback(ConnectionStateCallback connectionStateCallback) {
+        return false;
+    }
+
+    @Override
+    public void playUri(OperationCallback operationCallback, String s, int i, int i1) {
+
+    }
+
+    @Override
+    public void queue(OperationCallback operationCallback, String s) {
+
+    }
+
+    @Override
+    public void pause(OperationCallback operationCallback) {
+
+    }
+
+    @Override
+    public void resume(OperationCallback operationCallback) {
+
+    }
+
+    @Override
+    public void skipToNext(OperationCallback operationCallback) {
+
+    }
+
+    @Override
+    public void skipToPrevious(OperationCallback operationCallback) {
+
+    }
+
+    @Override
+    public void seekToPosition(OperationCallback operationCallback, int i) {
+
+    }
+
+    @Override
+    public void setShuffle(OperationCallback operationCallback, boolean b) {
+
+    }
+
+    @Override
+    public void setRepeat(OperationCallback operationCallback, boolean b) {
+
+    }
+
+    @Override
+    public void setPlaybackBitrate(OperationCallback operationCallback, PlaybackBitrate playbackBitrate) {
+
+    }
+
+    @Override
+    public void setConnectivityStatus(OperationCallback operationCallback, Connectivity connectivity) {
+
+    }
+
+    @Override
+    public void refreshCache() {
+
+    }
+
+    @Override
+    public Metadata getMetadata() {
+        return null;
+    }
+
+    @Override
+    public PlaybackState getPlaybackState() {
+        return null;
     }
 }
