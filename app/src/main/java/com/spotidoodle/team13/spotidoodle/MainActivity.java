@@ -25,6 +25,11 @@ import com.spotify.sdk.android.player.SpotifyPlayer;
 
 import java.io.Serializable;
 
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
+
 public class MainActivity extends AppCompatActivity implements SpotifyPlayer.NotificationCallback, ConnectionStateCallback, Player {
 
     //SHA1 Fingerprint 3D:5B:E8:6A:56:D1:FF:EC:91:AB:A8:27:50:13:A1:A6:85:35:CA:F6
@@ -122,6 +127,22 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                 //mPlayer.playUri(mOperationCallback, TEST_PLAYLIST_URI, 0, 0);
             }
         });
+    }
+
+    private void getSpotifyWebAPI() {
+        final String accessToken = "myAccessToken";
+
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(SpotifyApi.SPOTIFY_WEB_API_ENDPOINT)
+                .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(RequestFacade request) {
+                        request.addHeader("Authorization", "Bearer " + accessToken);
+                    }
+                })
+                .build();
+
+        SpotifyService spotify = restAdapter.create(SpotifyService.class);
     }
 
     private void onAuthenticationComplete(AuthenticationResponse authResponse) {
