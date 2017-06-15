@@ -1,13 +1,20 @@
 package com.spotidoodle.team13.spotidoodle;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.text.Layout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Window;
 import android.widget.Button;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -156,20 +163,41 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     }
 
     private void getUserPlaylists(SpotifyService spotify) {
-        final Button playlistOne = (Button) findViewById(R.id.button);
-        final Button playlistTwo = (Button) findViewById(R.id.button2);
-        final Button playlistThree = (Button) findViewById(R.id.button3);
-        final Button playlistFour = (Button) findViewById(R.id.button4);
-        final Button playlistFive = (Button) findViewById(R.id.button5);
         spotify.getMyPlaylists(new Callback<Pager<PlaylistSimple>>() {
             @Override
             public void success(Pager<PlaylistSimple> playlistSimplePager, Response response) {
                 myPlaylists = playlistSimplePager;
-                playlistOne.setText(myPlaylists.items.get(0).name);
-                playlistTwo.setText(myPlaylists.items.get(1).name);
-                playlistThree.setText(myPlaylists.items.get(2).name);
-                playlistFour.setText(myPlaylists.items.get(3).name);
-                playlistFive.setText(myPlaylists.items.get(4).name);
+                for (int i = 0; i < myPlaylists.items.size(); i++){
+                    final int iterator = i;
+                    Button playlistButton = new Button(MainActivity.this);
+                    playlistButton.setText(myPlaylists.items.get(i).name);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        playlistButton.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+                    }
+                    playlistButton.setId(iterator);
+                    TableLayout table = (TableLayout) findViewById(R.id.buttonLayout);
+                    playlistButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(MainActivity.this, SortMusicActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("playlist", myPlaylists.items.get(iterator).id);
+                            bundle.putString("clientID", CLIENT_ID);
+                            bundle.putInt("requestCode", REQUEST_CODE);
+                            intent.putExtras(bundle);
+                        }
+                    });
+                    playlistButton.setBackgroundColor(4);
+                    playlistButton.setGravity(Gravity.CENTER_HORIZONTAL);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+                    playlistButton.setLayoutParams(params);
+                    TableRow row = new TableRow(MainActivity.this);
+                    TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+                    row.addView(playlistButton, rowLayout);
+                    TableLayout.LayoutParams tableLayout = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
+                    table.addView(row, tableLayout);
+                }
             }
 
             @Override
@@ -177,58 +205,7 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                 error.printStackTrace();
             }
         });
-        playlistOne.setOnClickListener(onClickListener);
-        playlistTwo.setOnClickListener(onClickListener);
-        playlistThree.setOnClickListener(onClickListener);
-        playlistFour.setOnClickListener(onClickListener);
-        playlistFive.setOnClickListener(onClickListener);
-        /*playlistOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SortMusicActivity.class));
-            }
-        });*/
     }
-
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(final View v) {
-            Intent intent = new Intent(MainActivity.this, SortMusicActivity.class);
-            Bundle bundle = new Bundle();
-            switch(v.getId()){
-                case R.id.button:
-                    bundle.putString("playlist", TEST_PLAYLIST_URI);
-                    bundle.putString("clientID", CLIENT_ID);
-                    bundle.putInt("requestCode", REQUEST_CODE);
-                    intent.putExtras(bundle);
-                    break;
-                case R.id.button2:
-                    bundle.putString("playlist", TEST_PLAYLIST_URI);
-                    bundle.putString("clientID", CLIENT_ID);
-                    bundle.putInt("requestCode", REQUEST_CODE);
-                    intent.putExtras(bundle);
-                    break;
-                case R.id.button3:
-                    bundle.putString("playlist", TEST_PLAYLIST_URI);
-                    bundle.putString("clientID", CLIENT_ID);
-                    bundle.putInt("requestCode", REQUEST_CODE);
-                    intent.putExtras(bundle);
-                    break;
-                case R.id.button4:
-                    bundle.putString("playlist", TEST_PLAYLIST_URI);
-                    bundle.putString("clientID", CLIENT_ID);
-                    bundle.putInt("requestCode", REQUEST_CODE);
-                    intent.putExtras(bundle);
-                    break;
-                case R.id.button5:
-                    bundle.putString("playlist", TEST_PLAYLIST_URI);
-                    bundle.putString("clientID", CLIENT_ID);
-                    bundle.putInt("requestCode", REQUEST_CODE);
-                    intent.putExtras(bundle);
-                    break;
-            }
-        }
-    };
 
     @Override
     protected void onDestroy() {
