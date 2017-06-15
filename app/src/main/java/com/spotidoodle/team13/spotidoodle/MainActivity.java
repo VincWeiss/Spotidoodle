@@ -60,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     //SHA1 Fingerprint 3D:5B:E8:6A:56:D1:FF:EC:91:AB:A8:27:50:13:A1:A6:85:35:CA:F6
     private static final String CLIENT_ID = "9f703a39b15a4241b08dcea6685e5f50";
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
-    private static final String TEST_ALBUM_URI = "spotify:album:2lYmxilk8cXJlxxXmns1IU";
-    private static final String TEST_PLAYLIST_URI = "spotify:user:1139746471:playlist:2Hcu0u9LX7XqNtYlt6iTSM";
     private Player mPlayer;
     private final Player.OperationCallback mOperationCallback = new Player.OperationCallback() {
         @Override
@@ -72,18 +70,6 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         @Override
         public void onError(Error error) {
             System.out.println("ERROR:" + error);
-        }
-    };
-
-    private final SpotifyCallback spotifyCallback = new SpotifyCallback() {
-        @Override
-        public void failure(SpotifyError spotifyError) {
-            System.out.println("ERROR:" + spotifyError);
-        }
-
-        @Override
-        public void success(Object o, Response response) {
-            System.out.println("OK!");
         }
     };
 
@@ -182,9 +168,11 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                             Intent intent = new Intent(MainActivity.this, SortMusicActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putString("playlist", myPlaylists.items.get(iterator).id);
+                            bundle.putString("playlistUri", myPlaylists.items.get(iterator).uri);
                             bundle.putString("clientID", CLIENT_ID);
                             bundle.putInt("requestCode", REQUEST_CODE);
                             intent.putExtras(bundle);
+                            startActivity(intent);
                         }
                     });
                     playlistButton.setBackgroundColor(4);
@@ -235,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
 
     @Override
     public void onLoggedIn() {
-        mPlayer.playUri(mOperationCallback, "spotify:track:6GoNSKDv6eKxuHxn2Zcr9o", 0, 0);
         mPlayer.addNotificationCallback(new Player.NotificationCallback() {
             @Override
             public void onPlaybackEvent(PlayerEvent playerEvent) {
