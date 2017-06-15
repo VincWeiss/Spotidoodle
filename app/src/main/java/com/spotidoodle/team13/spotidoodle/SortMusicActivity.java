@@ -68,6 +68,15 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         builder.setScopes(new String[]{"user-read-private", "streaming"});
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+
+        final Button fave = (Button) findViewById(R.id.button7);
+        final Button delete = (Button) findViewById(R.id.button8);
+        final Button zap = (Button) findViewById(R.id.button9);
+        final Button skip = (Button) findViewById(R.id.button10);
+        fave.setOnClickListener(onClickListener);
+        delete.setOnClickListener(onClickListener);
+        zap.setOnClickListener(onClickListener);
+        skip.setOnClickListener(onClickListener);
     }
 
     @Override
@@ -116,8 +125,26 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         }
         if (playlistUri != null && mOperationCallback != null) {
             mPlayer.playUri(mOperationCallback, playlistUri, 0, 0);
+            mPlayer.setShuffle(mOperationCallback, true);
         }
     }
+
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(final View v) {
+            switch(v.getId()){
+                case R.id.button7:
+                    mPlayer.skipToNext(mOperationCallback);
+                    break;
+                case R.id.button8:
+                    break;
+                case R.id.button9:
+                    break;
+                case R.id.button10:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onDestroy() {
