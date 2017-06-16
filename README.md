@@ -6,12 +6,12 @@ your with Spotify created Playlist more specifically. At the moment, right now S
 algorithm that allows to sort alphabetically the titles or the interpreter names, after the date a song was added
 and the albums. The idea was to provide another sort algorithm that allows you to sort the songs after the BPM,
 the danceability, the party suitability and so on. Further the application should keep the functionality simple.
-Given that this is ìjustî an addon for the real Spotify application you canít search for songs or create new playlists
-(things you can do in the Spotify application). The second idea was to provide a possibility to ìrateî the songs of a
+Given that this is ‚Äújust‚Äù an addon for the real Spotify application you can‚Äôt search for songs or create new playlists
+(things you can do in the Spotify application). The second idea was to provide a possibility to ‚Äúrate‚Äù the songs of a
 playlist. The aim is to make a one button click solution for the user to store a song in his before chosen playlist, a
 one button click to delete the song of the actual playlist, to skip to the drop of a song or to skip the actual song.
 
-## Developing Vincent Weiss, Oxana Doroshkevich, Marco Himmelstein, Christoph Dˆrr, Frederick Wurfer
+## Developing Vincent Weiss, Oxana Doroshkevich, Marco Himmelstein, Christoph D√∂rr, Frederick Wurfer
 
 ### Tools
 
@@ -72,6 +72,8 @@ protected void onActivityResult(int requestCode, int resultCode, Intent intent) 
 
 http://kaaes.github.io/spotify-web-api-android/javadoc/
 https://github.com/kaaes/spotify-web-api-android
+http://www.programcreek.com/java-api-examples/index.php?api=kaaes.spotify.webapi.android.models.Playlist
+http://www.programcreek.com/java-api-examples/index.php?api=kaaes.spotify.webapi.android.SpotifyService
 
 ## Contributing
 
