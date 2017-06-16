@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -21,6 +22,10 @@ import com.spotify.sdk.android.player.SpotifyPlayer;
 
 import kaaes.spotify.webapi.android.SpotifyCallback;
 import kaaes.spotify.webapi.android.SpotifyError;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.SavedTrack;
+import kaaes.spotify.webapi.android.models.TrackSimple;
+import kaaes.spotify.webapi.android.models.TrackToRemove;
 import retrofit.client.Response;
 
 /**
@@ -33,6 +38,7 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
     private String CLIENT_ID;
     private String playlist;
     private String playlistUri;
+    private SpotifyService spotify;
     private int REQUEST_CODE;
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
 
@@ -69,10 +75,10 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-        final Button fave = (Button) findViewById(R.id.button7);
-        final Button delete = (Button) findViewById(R.id.button8);
-        final Button zap = (Button) findViewById(R.id.button9);
-        final Button skip = (Button) findViewById(R.id.button10);
+        final ImageButton fave = (ImageButton) findViewById(R.id.imageButtonFave);
+        final ImageButton delete = (ImageButton) findViewById(R.id.imageButtonDelete);
+        final ImageButton zap = (ImageButton) findViewById(R.id.imageButtonPlaylist);
+        final ImageButton skip = (ImageButton) findViewById(R.id.imageButtonSkip);
         fave.setOnClickListener(onClickListener);
         delete.setOnClickListener(onClickListener);
         zap.setOnClickListener(onClickListener);
@@ -80,15 +86,8 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
     }
 
     @Override
-    public void startActivityFromFragment(Fragment fragment, Intent intent, int requestCode) {
-        super.startActivityFromFragment(fragment, intent, requestCode);
-        System.out.println("------------------------- startActivityFromFragment");
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        System.out.println("------------------------- onActivityResult");
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             switch (response.getType()) {
@@ -126,6 +125,7 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         if (playlistUri != null && mOperationCallback != null) {
             mPlayer.playUri(mOperationCallback, playlistUri, 0, 0);
             mPlayer.setShuffle(mOperationCallback, true);
+            mPlayer.setRepeat(mOperationCallback, true);
         }
     }
 
@@ -133,14 +133,18 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         @Override
         public void onClick(final View v) {
             switch(v.getId()){
-                case R.id.button7:
+                case R.id.imageButtonFave:
+
+                    break;
+                case R.id.imageButtonDelete:
+
+                    System.out.println("______________________________________" + TrackToRemove.Creator.class.getName());
+                    break;
+                case R.id.imageButtonPlaylist:
+                    mPlayer.seekToPosition(mOperationCallback, 60);
+                    break;
+                case R.id.imageButtonSkip:
                     mPlayer.skipToNext(mOperationCallback);
-                    break;
-                case R.id.button8:
-                    break;
-                case R.id.button9:
-                    break;
-                case R.id.button10:
                     break;
             }
         }

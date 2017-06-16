@@ -33,6 +33,7 @@ import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         }
     }
 
-    private void getUserPlaylists(SpotifyService spotify) {
+    private void getUserPlaylists(final SpotifyService spotify) {
         spotify.getMyPlaylists(new Callback<Pager<PlaylistSimple>>() {
             @Override
             public void success(Pager<PlaylistSimple> playlistSimplePager, Response response) {
