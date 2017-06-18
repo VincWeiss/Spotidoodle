@@ -1,5 +1,6 @@
 package com.spotidoodle.team13.spotidoodle;
 
+import android.graphics.drawable.shapes.ArcShape;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -9,9 +10,9 @@ import android.content.Intent;
 import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Window;
 import android.widget.Button;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -22,37 +23,20 @@ import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
-import com.spotify.sdk.android.player.Connectivity;
 import com.spotify.sdk.android.player.Error;
-import com.spotify.sdk.android.player.Metadata;
-import com.spotify.sdk.android.player.PlaybackBitrate;
-import com.spotify.sdk.android.player.PlaybackState;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation.*;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyCallback;
-import kaaes.spotify.webapi.android.SpotifyError;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Pager;
-import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
-import kaaes.spotify.webapi.android.models.PlaylistsPager;
 import kaaes.spotify.webapi.android.models.UserPrivate;
-import kaaes.spotify.webapi.android.models.UserPublic;
 import retrofit.Callback;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
@@ -110,16 +94,22 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         }
     }
 
-    private void onAuthenticationComplete(AuthenticationResponse authResponse) {
+    private void onAuthenticationComplete(final AuthenticationResponse authResponse) {
         this.api = new SpotifyApi();
         this.api.setAccessToken(authResponse.getAccessToken());
         final TextView userName = (TextView) findViewById(R.id.textView);
+        final ImageView userImage = (ImageView) findViewById(R.id.imageView2);
         SpotifyService spotify = api.getService();
         spotify.getMe(new Callback<UserPrivate>() {
             @Override
             public void success(UserPrivate userPrivate, Response response) {
                 user = userPrivate;
                 userName.setText(user.display_name.toString());
+                System.out.println("___________________________________________" + user.images.get(0));
+                System.out.println("___________________________________________" + user.images.get(0).url.toString());
+                String imageURL = user.images.get(0).url;
+                float[] outerR = new float[] {2, 3, 2, 3, 3, 2, 2, 2};
+                Picasso.with(getApplicationContext()).load(imageURL).transform( new CircleTransform()).into(userImage);
             }
 
             @Override

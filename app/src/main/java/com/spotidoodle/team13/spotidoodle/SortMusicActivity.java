@@ -20,6 +20,7 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
+import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyCallback;
 import kaaes.spotify.webapi.android.SpotifyError;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -134,10 +135,8 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         public void onClick(final View v) {
             switch(v.getId()){
                 case R.id.imageButtonFave:
-
                     break;
                 case R.id.imageButtonDelete:
-
                     System.out.println("______________________________________" + TrackToRemove.Creator.class.getName());
                     break;
                 case R.id.imageButtonPlaylist:
