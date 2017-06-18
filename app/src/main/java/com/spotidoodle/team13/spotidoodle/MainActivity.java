@@ -105,10 +105,7 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
             public void success(UserPrivate userPrivate, Response response) {
                 user = userPrivate;
                 userName.setText(user.display_name.toString());
-                System.out.println("___________________________________________" + user.images.get(0));
-                System.out.println("___________________________________________" + user.images.get(0).url.toString());
                 String imageURL = user.images.get(0).url;
-                float[] outerR = new float[] {2, 3, 2, 3, 3, 2, 2, 2};
                 Picasso.with(getApplicationContext()).load(imageURL).transform( new CircleTransform()).into(userImage);
             }
 
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                     playlistButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(MainActivity.this, SortMusicActivity.class);
+                            Intent intent = new Intent(MainActivity.this, ChooseTaskActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putString("playlist", myPlaylists.items.get(iterator).id);
                             bundle.putString("playlistUri", myPlaylists.items.get(iterator).uri);
