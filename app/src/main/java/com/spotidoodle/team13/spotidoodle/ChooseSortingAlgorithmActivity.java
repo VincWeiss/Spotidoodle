@@ -16,13 +16,13 @@ import kaaes.spotify.webapi.android.SpotifyService;
 
 public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
 
-    private Player mPlayer;
     private String CLIENT_ID;
     private String playlist;
     private String playlistUri;
-    private SpotifyService spotify;
     private AudioFeaturesTrack trackAnalyser;
     private int REQUEST_CODE;
+    private String ACCSSES_TOKEN;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +36,9 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
             this.CLIENT_ID = bundle.getString("clientID");
             this.REQUEST_CODE = bundle.getInt("requestCode");
             this.playlist = bundle.getString("playlist");
-            System.out.println("_____________________________________" + bundle.get("playlistUri").toString());
             this.playlistUri =  bundle.get("playlistUri").toString();
+            this.ACCSSES_TOKEN = bundle.getString("accessToken");
+            this.userID = bundle.getString("userID");
         }
 
         final Button danceability = (Button) findViewById(R.id.algorithm1);
@@ -53,15 +54,20 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
             Bundle bundle;
             switch(v.getId()){
                 case R.id.algorithm1:
-                    intent = new Intent(ChooseSortingAlgorithmActivity.this, SortMusicActivity.class);
+                    intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
                     bundle.putFloat("dancability", trackAnalyser.danceability);
-                    System.out.println("-------------------------------" + trackAnalyser.danceability);
+                    bundle.putString("playlist", playlist);
+                    bundle.putString("playlistUri", playlistUri);
+                    bundle.putString("clientID", CLIENT_ID);
+                    bundle.putInt("requestCode", REQUEST_CODE);
+                    bundle.putString("accessToken", ACCSSES_TOKEN);
+                    bundle.putString("userID", userID);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
                 case R.id.algorithm2:
-                    intent = new Intent(ChooseSortingAlgorithmActivity.this, SortMusicActivity.class);
+                    intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
                     intent.putExtras(bundle);
                     startActivity(intent);

@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     private Pager<PlaylistSimple> myPlaylists;
     private UserPrivate user;
     private SpotifyApi api;
+    private String ACCSSES_TOKEN;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     private void onAuthenticationComplete(final AuthenticationResponse authResponse) {
         this.api = new SpotifyApi();
         this.api.setAccessToken(authResponse.getAccessToken());
+        this.ACCSSES_TOKEN = authResponse.getAccessToken();
         final TextView userName = (TextView) findViewById(R.id.textView);
         final ImageView userImage = (ImageView) findViewById(R.id.imageView2);
         SpotifyService spotify = api.getService();
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                 user = userPrivate;
                 userName.setText(user.display_name.toString());
                 String imageURL = user.images.get(0).url;
+                userID = userPrivate.id;
                 Picasso.with(getApplicationContext()).load(imageURL).transform( new CircleTransform()).into(userImage);
             }
 
@@ -159,6 +163,8 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                             bundle.putString("playlistUri", myPlaylists.items.get(iterator).uri);
                             bundle.putString("clientID", CLIENT_ID);
                             bundle.putInt("requestCode", REQUEST_CODE);
+                            bundle.putString("accessToken", ACCSSES_TOKEN);
+                            bundle.putString("userID", userID);
                             intent.putExtras(bundle);
                             startActivity(intent);
                         }
