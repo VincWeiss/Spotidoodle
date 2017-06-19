@@ -8,11 +8,10 @@
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:stretchColumns="*"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,30 +21,48 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/sortMusicButton"
+                android:id="@+id/algorithm1"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:background="@mipmap/muster"
-                android:text="Sort Music" />
+                android:layout_height="match_parent"
+                android:text="Danceability" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/algorithm2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Energy" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/algorithm3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Liveness" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/sortPlaylistButton"
+                android:id="@+id/algorithm4"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:background="@mipmap/muster"
-                android:text="Sort Playlists" />
+                android:layout_height="wrap_content"
+                android:text="Loudness" />
 
         </TableRow>
-
     </TableLayout>
-
 </android.support.constraint.ConstraintLayout>

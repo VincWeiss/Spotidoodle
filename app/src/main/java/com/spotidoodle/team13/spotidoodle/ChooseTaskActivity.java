@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -27,13 +28,10 @@ import kaaes.spotify.webapi.android.models.TrackToRemove;
 
 public class ChooseTaskActivity  extends AppCompatActivity {
 
-    private Player mPlayer;
     private String CLIENT_ID;
     private String playlist;
     private String playlistUri;
-    private SpotifyService spotify;
     private int REQUEST_CODE;
-    private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +44,11 @@ public class ChooseTaskActivity  extends AppCompatActivity {
             this.CLIENT_ID = bundle.getString("clientID");
             this.REQUEST_CODE = bundle.getInt("requestCode");
             this.playlist = bundle.getString("playlist");
-            System.out.println("_____________________________________" + bundle.get("playlistUri").toString());
             this.playlistUri =  bundle.get("playlistUri").toString();
         }
 
-        final ImageButton sortPlaylist = (ImageButton) findViewById(R.id.imageButton);
-        final ImageButton sortMusic = (ImageButton) findViewById(R.id.imageButton2);
+        final Button sortPlaylist = (Button) findViewById(R.id.sortMusicButton);
+        final Button sortMusic = (Button) findViewById(R.id.sortPlaylistButton);
         sortPlaylist.setOnClickListener(onClickListener);
         sortMusic.setOnClickListener(onClickListener);
     }
@@ -62,7 +59,7 @@ public class ChooseTaskActivity  extends AppCompatActivity {
             Intent intent;
             Bundle bundle;
             switch(v.getId()){
-                case R.id.imageButton:
+                case R.id.sortMusicButton:
                     intent = new Intent(ChooseTaskActivity.this, SortMusicActivity.class);
                     bundle = new Bundle();
                     bundle.putString("playlist", playlist);
@@ -72,8 +69,8 @@ public class ChooseTaskActivity  extends AppCompatActivity {
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
-                case R.id.imageButton2:
-                    intent = new Intent(ChooseTaskActivity.this, SortMusicActivity.class);
+                case R.id.sortPlaylistButton:
+                    intent = new Intent(ChooseTaskActivity.this, ChooseSortingAlgorithmActivity.class);
                     bundle = new Bundle();
                     bundle.putString("playlist", playlist);
                     bundle.putString("playlistUri", playlistUri);
