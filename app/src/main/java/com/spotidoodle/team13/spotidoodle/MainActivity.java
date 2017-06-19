@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                             bundle.putInt("requestCode", REQUEST_CODE);
                             bundle.putString("accessToken", ACCSSES_TOKEN);
                             bundle.putString("userID", userID);
+                            bundle.putString("playlistTitle", myPlaylists.items.get(iterator).name);
                             intent.putExtras(bundle);
                             startActivity(intent);
                         }
