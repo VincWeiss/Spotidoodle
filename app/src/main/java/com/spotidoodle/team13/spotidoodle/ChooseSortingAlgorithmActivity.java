@@ -58,7 +58,7 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
                 case R.id.algorithm1:
                     intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
-                    bundle.putFloat("dancability", trackAnalyser.danceability);
+                    bundle.putFloat("algorithm", trackAnalyser.danceability);
                     bundle.putString("playlist", playlist);
                     bundle.putString("playlistUri", playlistUri);
                     bundle.putString("clientID", CLIENT_ID);
