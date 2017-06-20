@@ -1,7 +1,9 @@
 package com.spotidoodle.team13.spotidoodle;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.camera2.CameraCharacteristics;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -86,12 +88,14 @@ public class SortedPlaylists  extends AppCompatActivity {
                     final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
                     for( final PlaylistTrack track : playlistTracks){
                         Button song = new Button(SortedPlaylists.this);
+                        setButtonLayout(song);
                         final TextView value = new TextView((SortedPlaylists.this));
                         song.setText(track.track.name);
                         spotify.getTrackAudioFeatures(track.track.id, new Callback<AudioFeaturesTrack>() {
                             @Override
                             public void success(AudioFeaturesTrack audioFeaturesTrack, Response response) {
                                 value.setText(String.valueOf(audioFeaturesTrack.danceability));
+                                setTextLayout(value);
                             }
 
                             @Override
@@ -131,7 +135,9 @@ public class SortedPlaylists  extends AppCompatActivity {
                                         Button song = new Button(SortedPlaylists.this);
                                         final TextView value = new TextView((SortedPlaylists.this));
                                         song.setText(track.getValue().track.name);
+                                        setButtonLayout(song);
                                         value.setText(track.getKey().toString());
+                                        setTextLayout(value);
                                         TableRow row = new TableRow(SortedPlaylists.this);
                                         GridLayout grid = new GridLayout(SortedPlaylists.this);
                                         TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
@@ -173,4 +179,18 @@ public class SortedPlaylists  extends AppCompatActivity {
             }
         }
     };
+
+    private void setButtonLayout(Button button){
+        button.setBackgroundResource(R.drawable.buttonstyling);
+        button.setAlpha((float) 0.8);
+        button.setWidth(1100);
+    }
+
+    private void setTextLayout(TextView text) {
+        //text.setBackgroundColor(Color.parseColor("#ff0099cc"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            text.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        }
+        //text.setTextColor(Color.parseColor("#ff000000"));
+    }
 }
