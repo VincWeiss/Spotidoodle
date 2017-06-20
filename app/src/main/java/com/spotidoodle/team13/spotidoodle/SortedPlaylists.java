@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -104,6 +107,7 @@ public class SortedPlaylists  extends AppCompatActivity {
                             }
                         });
                         TableRow row = new TableRow(SortedPlaylists.this);
+                        row.setBackgroundResource(R.drawable.rowlayout);
                         GridLayout grid = new GridLayout(SortedPlaylists.this);
                         TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
                         grid.addView(song);
@@ -139,6 +143,7 @@ public class SortedPlaylists  extends AppCompatActivity {
                                         value.setText(track.getKey().toString());
                                         setTextLayout(value);
                                         TableRow row = new TableRow(SortedPlaylists.this);
+                                        row.setBackgroundResource(R.drawable.rowlayout);
                                         GridLayout grid = new GridLayout(SortedPlaylists.this);
                                         TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
                                         grid.addView(song);
@@ -183,14 +188,21 @@ public class SortedPlaylists  extends AppCompatActivity {
     private void setButtonLayout(Button button){
         button.setBackgroundResource(R.drawable.buttonstyling);
         button.setAlpha((float) 0.8);
-        button.setWidth(1100);
+        DisplayMetrics dm = new DisplayMetrics();
+        this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        button.setWidth((width/5) * 4);
     }
 
     private void setTextLayout(TextView text) {
-        //text.setBackgroundColor(Color.parseColor("#ff0099cc"));
+        text.setBackgroundResource(R.drawable.textstyling);
+        text.setAlpha((float) 0.7);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             text.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         }
-        //text.setTextColor(Color.parseColor("#ff000000"));
+        DisplayMetrics dm = new DisplayMetrics();
+        this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        text.setWidth(width/5);
     }
 }
