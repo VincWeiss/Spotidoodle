@@ -7,9 +7,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.method.SingleLineTransformationMethod;
+import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
@@ -28,8 +30,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -183,15 +187,16 @@ public class SortedPlaylists  extends AppCompatActivity {
                     startActivity(getIntent());
                     break;
                 case R.id.saveButton:
+                    Map map = unsortedTracks;
                     spotify.createPlaylist(userID, createObjectMap(unsortedTracks), new Callback<Playlist>() {
                         @Override
                         public void success(Playlist playlist, Response response) {
-
+                            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + playlist.name);
                         }
 
                         @Override
                         public void failure(RetrofitError error) {
-
+                            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                         }
                     });
             }
@@ -199,9 +204,11 @@ public class SortedPlaylists  extends AppCompatActivity {
     };
 
     private Map createObjectMap(TreeMap unsortedTracks) {
-        Map map = null;
-        for (int i = 0; i < unsortedTracks.size(); i++) {
-            map.put(String.valueOf(i), unsortedTracks.pollFirstEntry());
+        Map map = new TreeMap<String, Object>();
+        int index = 0;
+        for (Object track : unsortedTracks.entrySet()) {
+            map.put(index, track);
+            index++;
         }
         return map;
     }
