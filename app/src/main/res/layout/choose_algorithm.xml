@@ -42,7 +42,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/algorithm1"
+                android:id="@+id/algorithmDance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/holo_blue_bright"
@@ -56,11 +56,11 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/algorithm2"
+                android:id="@+id/algorithmBPM"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/holo_blue_dark"
-                android:text="Energy" />
+                android:text="BPM" />
         </TableRow>
 
         <TableRow
@@ -68,11 +68,11 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/algorithm3"
+                android:id="@+id/algorithmEnergy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/holo_blue_bright"
-                android:text="Liveness" />
+                android:text="ENERGY" />
 
         </TableRow>
 
@@ -81,7 +81,7 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/algorithm4"
+                android:id="@+id/algorithmLoudness"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/holo_blue_dark"

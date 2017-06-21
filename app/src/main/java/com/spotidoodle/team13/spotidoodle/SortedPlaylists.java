@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.text.method.SingleLineTransformationMethod;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.spotify.sdk.android.player.Player;
+import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.AudioFeaturesTrack;
 import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Result;
 import retrofit.Callback;
@@ -46,17 +49,14 @@ import retrofit.client.Response;
 
 public class SortedPlaylists  extends AppCompatActivity {
 
-    private Player mPlayer;
-    private String CLIENT_ID;
     private String playlist;
     private String playlistUri;
     private SpotifyService spotify;
     private SpotifyApi api;
-    private int REQUEST_CODE;
     private String ACCSSES_TOKEN;
     private String userID;
     private String playlistTitle;
-    private Float algorithm;
+    private String algorithm;
     private TreeMap <Float, PlaylistTrack> unsortedTracks;
 
     @Override
@@ -67,14 +67,12 @@ public class SortedPlaylists  extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            this.CLIENT_ID = bundle.getString("clientID");
-            this.REQUEST_CODE = bundle.getInt("requestCode");
             this.playlist = bundle.getString("playlist");
             this.playlistUri =  bundle.get("playlistUri").toString();
             this.ACCSSES_TOKEN = bundle.getString("accessToken");
             this.userID = bundle.getString("userID");
             this.playlistTitle = bundle.getString("playlistTitle");
-            this.algorithm = bundle.getFloat("algorithm");
+            this.algorithm = bundle.getString("algorithm");
 
         }
         this.api = new SpotifyApi();
@@ -82,6 +80,9 @@ public class SortedPlaylists  extends AppCompatActivity {
         spotify = api.getService();
         final TextView title = (TextView) findViewById(R.id.playlistTitle);
         title.setText(this.playlistTitle);
+        Button savePlaylist = (Button) findViewById(R.id.saveButton);
+        savePlaylist.setBackgroundResource(R.drawable.circle);
+        savePlaylist.setOnClickListener(onClickListener);
 
         if (intent.getFlags() == 0) {
             spotify.getPlaylistTracks(userID, playlist, new Callback<Pager<PlaylistTrack>>() {
@@ -97,7 +98,7 @@ public class SortedPlaylists  extends AppCompatActivity {
                         spotify.getTrackAudioFeatures(track.track.id, new Callback<AudioFeaturesTrack>() {
                             @Override
                             public void success(AudioFeaturesTrack audioFeaturesTrack, Response response) {
-                                value.setText(String.valueOf(audioFeaturesTrack.danceability));
+                                value.setText(algorithm + " value " + String.valueOf(getSortingAlgorithm(algorithm, audioFeaturesTrack)));
                                 setTextLayout(value);
                             }
 
@@ -133,14 +134,14 @@ public class SortedPlaylists  extends AppCompatActivity {
                         spotify.getTrackAudioFeatures(track.track.id, new Callback<AudioFeaturesTrack>() {
                             @Override
                             public void success(AudioFeaturesTrack audioFeaturesTrack, Response response) {
-                                unsortedTracks.put(audioFeaturesTrack.danceability, track);
+                                unsortedTracks.put(getSortingAlgorithm(algorithm, audioFeaturesTrack), track);
                                 if (playlistTracks.size() == unsortedTracks.size()) {
                                     for (Map.Entry<Float, PlaylistTrack> track : unsortedTracks.entrySet()) {
                                         Button song = new Button(SortedPlaylists.this);
                                         final TextView value = new TextView((SortedPlaylists.this));
                                         song.setText(track.getValue().track.name);
                                         setButtonLayout(song);
-                                        value.setText(track.getKey().toString());
+                                        value.setText(algorithm + " value " +track.getKey().toString());
                                         setTextLayout(value);
                                         TableRow row = new TableRow(SortedPlaylists.this);
                                         row.setBackgroundResource(R.drawable.rowlayout);
@@ -181,17 +182,51 @@ public class SortedPlaylists  extends AppCompatActivity {
                     finish();
                     startActivity(getIntent());
                     break;
+                case R.id.saveButton:
+                    spotify.createPlaylist(userID, createObjectMap(unsortedTracks), new Callback<Playlist>() {
+                        @Override
+                        public void success(Playlist playlist, Response response) {
+
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                        }
+                    });
             }
         }
     };
 
+    private Map createObjectMap(TreeMap unsortedTracks) {
+        Map map = null;
+        for (int i = 0; i < unsortedTracks.size(); i++) {
+            map.put(String.valueOf(i), unsortedTracks.pollFirstEntry());
+        }
+        return map;
+    }
+
+    private Float getSortingAlgorithm(String algorithm, AudioFeaturesTrack analyser) {
+        switch (algorithm) {
+            case "danceability":
+                return analyser.danceability;
+            case "energy":
+                return analyser.energy;
+            case "loudness":
+                return analyser.loudness;
+            case "tempo":
+                return analyser.tempo;
+        }
+        return Float.valueOf("0.0");
+    }
+
     private void setButtonLayout(Button button){
-        button.setBackgroundResource(R.drawable.buttonstyling);
+        //button.setBackgroundResource(R.drawable.buttonstyling); blue radiant background
         button.setAlpha((float) 0.8);
         DisplayMetrics dm = new DisplayMetrics();
         this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
-        button.setWidth((width/5) * 4);
+        button.setWidth((width/5) * 3);
     }
 
     private void setTextLayout(TextView text) {
@@ -203,6 +238,6 @@ public class SortedPlaylists  extends AppCompatActivity {
         DisplayMetrics dm = new DisplayMetrics();
         this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
-        text.setWidth(width/5);
+        text.setWidth((width/5) * 2);
     }
 }

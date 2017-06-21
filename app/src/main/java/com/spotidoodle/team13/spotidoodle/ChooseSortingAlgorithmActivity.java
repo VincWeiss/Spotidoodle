@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.spotify.sdk.android.player.Player;
 import kaaes.spotify.webapi.android.models.AudioFeaturesTrack;
-import kaaes.spotify.webapi.android.SpotifyService;
 
 /**
  * Created by Oxana on 19.06.2017.
@@ -43,10 +41,14 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
             this.playlistTitle = bundle.getString("playlistTitle");
         }
 
-        final Button danceability = (Button) findViewById(R.id.algorithm1);
-        final Button dpi = (Button) findViewById(R.id.algorithm2);
+        final Button danceability = (Button) findViewById(R.id.algorithmDance);
+        final Button bpm = (Button) findViewById(R.id.algorithmBPM);
+        final Button energy = (Button) findViewById(R.id.algorithmEnergy);
+        final Button loudness = (Button) findViewById(R.id.algorithmLoudness);
         danceability.setOnClickListener(onClickListener);
-        dpi.setOnClickListener(onClickListener);
+        bpm.setOnClickListener(onClickListener);
+        energy.setOnClickListener(onClickListener);
+        loudness.setOnClickListener(onClickListener);
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -55,23 +57,51 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
             Intent intent;
             Bundle bundle;
             switch(v.getId()){
-                case R.id.algorithm1:
+                case R.id.algorithmDance:
                     intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
-                    bundle.putFloat("algorithm", trackAnalyser.danceability);
+                    bundle.putString("algorithm", "danceability");
                     bundle.putString("playlist", playlist);
                     bundle.putString("playlistUri", playlistUri);
-                    bundle.putString("clientID", CLIENT_ID);
-                    bundle.putInt("requestCode", REQUEST_CODE);
                     bundle.putString("accessToken", ACCSSES_TOKEN);
                     bundle.putString("userID", userID);
                     bundle.putString("playlistTitle", playlistTitle);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
-                case R.id.algorithm2:
+                case R.id.algorithmBPM:
                     intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
+                    bundle.putString("algorithm", "tempo");
+                    bundle.putString("playlist", playlist);
+                    bundle.putString("playlistUri", playlistUri);
+                    bundle.putString("accessToken", ACCSSES_TOKEN);
+                    bundle.putString("userID", userID);
+                    bundle.putString("playlistTitle", playlistTitle);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    break;
+                case R.id.algorithmEnergy:
+                    intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
+                    bundle = new Bundle();
+                    bundle.putString("algorithm", "energy");
+                    bundle.putString("playlist", playlist);
+                    bundle.putString("playlistUri", playlistUri);
+                    bundle.putString("accessToken", ACCSSES_TOKEN);
+                    bundle.putString("userID", userID);
+                    bundle.putString("playlistTitle", playlistTitle);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    break;
+                case R.id.algorithmLoudness:
+                    intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
+                    bundle = new Bundle();
+                    bundle.putString("algorithm", "loudness");
+                    bundle.putString("playlist", playlist);
+                    bundle.putString("playlistUri", playlistUri);
+                    bundle.putString("accessToken", ACCSSES_TOKEN);
+                    bundle.putString("userID", userID);
+                    bundle.putString("playlistTitle", playlistTitle);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
