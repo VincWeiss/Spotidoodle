@@ -2,11 +2,9 @@ package com.spotidoodle.team13.spotidoodle;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -19,15 +17,9 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
-
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyCallback;
-import kaaes.spotify.webapi.android.SpotifyError;
+import com.spotify.sdk.android.player.PlaybackState;
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.SavedTrack;
-import kaaes.spotify.webapi.android.models.TrackSimple;
 import kaaes.spotify.webapi.android.models.TrackToRemove;
-import retrofit.client.Response;
 
 /**
  * Created by Oxana on 01.06.2017.
@@ -66,7 +58,6 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
             this.CLIENT_ID = bundle.getString("clientID");
             this.REQUEST_CODE = bundle.getInt("requestCode");
             this.playlist = bundle.getString("playlist");
-            System.out.println("_____________________________________" + bundle.get("playlistUri").toString());
             this.playlistUri =  bundle.get("playlistUri").toString();
         }
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
@@ -125,8 +116,6 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         }
         if (playlistUri != null && mOperationCallback != null) {
             mPlayer.playUri(mOperationCallback, playlistUri, 0, 0);
-            mPlayer.setShuffle(mOperationCallback, true);
-            mPlayer.setRepeat(mOperationCallback, true);
         }
     }
 
@@ -135,12 +124,13 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         public void onClick(final View v) {
             switch(v.getId()){
                 case R.id.imageButtonFave:
+                    mPlayer.setShuffle(mOperationCallback, true);
                     break;
                 case R.id.imageButtonDelete:
                     System.out.println("______________________________________" + TrackToRemove.Creator.class.getName());
                     break;
                 case R.id.imageButtonPlaylist:
-                    mPlayer.seekToPosition(mOperationCallback, 60);
+                    mPlayer.seekToPosition(mOperationCallback, 60000);
                     break;
                 case R.id.imageButtonSkip:
                     mPlayer.skipToNext(mOperationCallback);

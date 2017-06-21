@@ -204,7 +204,7 @@ public class SortedPlaylists  extends AppCompatActivity {
     };
 
     private Map createObjectMap(TreeMap unsortedTracks) {
-        Map map = new TreeMap<String, Object>();
+        Map map = new TreeMap();
         int index = 0;
         for (Object track : unsortedTracks.entrySet()) {
             map.put(index, track);
