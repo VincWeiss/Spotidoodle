@@ -18,7 +18,12 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 import com.spotify.sdk.android.player.PlaybackState;
+
+import java.util.Map;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.TrackToRemove;
 
 /**
@@ -32,6 +37,8 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
     private String playlist;
     private String playlistUri;
     private SpotifyService spotify;
+    private SpotifyApi api;
+    private String ACCSSES_TOKEN;
     private int REQUEST_CODE;
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
 
@@ -59,7 +66,12 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
             this.REQUEST_CODE = bundle.getInt("requestCode");
             this.playlist = bundle.getString("playlist");
             this.playlistUri =  bundle.get("playlistUri").toString();
+            this.ACCSSES_TOKEN = bundle.getString("accessToken");
         }
+        this.api = new SpotifyApi();
+        this.api.setAccessToken(this.ACCSSES_TOKEN);
+        spotify = api.getService();
+
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
                 AuthenticationResponse.Type.TOKEN,
                 REDIRECT_URI);
@@ -127,6 +139,7 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
                     mPlayer.setShuffle(mOperationCallback, true);
                     break;
                 case R.id.imageButtonDelete:
+                    //spotify.addTracksToPlaylist(userID, playlistID, Map <String, Object>, Map<String, Object>, mOperationCallback(PlaylistTrack)); -> save full playlist
                     System.out.println("______________________________________" + TrackToRemove.Creator.class.getName());
                     break;
                 case R.id.imageButtonPlaylist:

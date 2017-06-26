@@ -72,6 +72,7 @@ public class ChooseTaskActivity  extends AppCompatActivity {
                     bundle.putString("playlistUri", playlistUri);
                     bundle.putString("clientID", CLIENT_ID);
                     bundle.putInt("requestCode", REQUEST_CODE);
+                    bundle.putString("accessToken", ACCSSES_TOKEN);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;

@@ -1,12 +1,14 @@
 package com.spotidoodle.team13.spotidoodle;
 
 import android.content.Intent;
+import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.hardware.camera2.CameraCharacteristics;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -22,11 +24,15 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
+import com.spotify.sdk.android.player.Error;
 import com.spotify.sdk.android.player.Player;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,12 +43,18 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyCallback;
+import kaaes.spotify.webapi.android.SpotifyError;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.AudioFeaturesTrack;
 import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Playlist;
+import kaaes.spotify.webapi.android.models.PlaylistBase;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.Result;
+import kaaes.spotify.webapi.android.models.SnapshotId;
+import kaaes.spotify.webapi.android.models.Tracks;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -174,6 +186,7 @@ public class SortedPlaylists  extends AppCompatActivity {
                 }
             });
         }
+
         final Button sortPlaylist = (Button) findViewById(R.id.sortButton);
         sortPlaylist.setOnClickListener(onClickListener);
     }
@@ -187,30 +200,56 @@ public class SortedPlaylists  extends AppCompatActivity {
                     startActivity(getIntent());
                     break;
                 case R.id.saveButton:
-                    Map map = unsortedTracks;
-                    spotify.createPlaylist(userID, createObjectMap(unsortedTracks), new Callback<Playlist>() {
-                        @Override
-                        public void success(Playlist playlist, Response response) {
-                            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + playlist.name);
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-                        }
-                    });
+                    createPlaylistUsingBodyMap();
             }
         }
     };
 
-    private Map createObjectMap(TreeMap unsortedTracks) {
-        Map map = new TreeMap();
-        int index = 0;
-        for (Object track : unsortedTracks.entrySet()) {
-            map.put(index, track);
-            index++;
+    private void createPlaylistUsingBodyMap() {
+        final String owner = userID.toString();
+        final String name = this.playlistTitle + " sorted with decreasing " + this.algorithm;
+        final boolean isPublic = true;
+        final Map<String, Object> options = new HashMap();
+        options.put("name", name);
+        options.put("public", isPublic);
+        spotify.createPlaylist(owner, options, new SpotifyCallback<Playlist>() {
+            @Override
+            public void failure(SpotifyError spotifyError) {
+                spotifyError.printStackTrace();
+            }
+
+            @Override
+            public void success(Playlist playlist, Response response) {
+                addTracksToNewPlaylist(playlist.id);
+            }
+        });
+    }
+
+    private void addTracksToNewPlaylist(String playlistID) {
+        final int position = 1;
+        final Map<String, Object> options = new HashMap<>();
+        final List<String> trackUris = new ArrayList();
+        for (Map.Entry<Float, PlaylistTrack> track : unsortedTracks.entrySet()) {
+            System.out.println("the track credentials: " + track.getValue().track.id);
+            trackUris.add(track.getValue().track.uri);
         }
-        return map;
+        options.put("uris", trackUris);
+
+        final Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put("position", String.valueOf(position));
+        System.out.println("queryParameters: " + queryParameters.entrySet());
+        System.out.println("options: " + options.entrySet());
+        spotify.addTracksToPlaylist(userID, playlistID, queryParameters, options, new SpotifyCallback<Pager<PlaylistTrack>>() {
+            @Override
+            public void failure(SpotifyError spotifyError) {
+                spotifyError.printStackTrace();
+            }
+
+            @Override
+            public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + playlistTrackPager.items.size());
+            }
+        });
     }
 
     private Float getSortingAlgorithm(String algorithm, AudioFeaturesTrack analyser) {
