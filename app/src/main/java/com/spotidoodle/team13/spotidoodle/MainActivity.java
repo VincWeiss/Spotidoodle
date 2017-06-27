@@ -191,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     public void onPlaybackEvent(PlayerEvent playerEvent) {
         Log.d("MainActivity", "Playback event received: " + playerEvent.name());
         switch (playerEvent) {
-            // Handle event type as necessary
             default:
                 break;
         }
@@ -201,7 +200,6 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     public void onPlaybackError(Error error) {
         Log.d("MainActivity", "Playback error received: " + error.name());
         switch (error) {
-            // Handle error type as necessary
             default:
                 break;
         }
