@@ -1,13 +1,9 @@
 package com.spotidoodle.team13.spotidoodle;
 
-import android.graphics.drawable.shapes.ArcShape;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Button;
@@ -29,7 +25,6 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation.*;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -46,17 +41,6 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     private static final String CLIENT_ID = "9f703a39b15a4241b08dcea6685e5f50";
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
     private Player mPlayer;
-    private final Player.OperationCallback mOperationCallback = new Player.OperationCallback() {
-        @Override
-        public void onSuccess() {
-            System.out.println("OK!");
-        }
-
-        @Override
-        public void onError(Error error) {
-            System.out.println("ERROR:" + error);
-        }
-    };
 
     private static final int REQUEST_CODE = 1337;
     private Pager<PlaylistSimple> myPlaylists;
@@ -76,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         builder.setScopes(new String[]{"user-read-private",
                                         "playlist-read-private",
                                         "playlist-modify-public",
-                                        "playlist-read-collaborative",
                                         "playlist-modify-private",
+                                        "playlist-read-collaborative",
                                         "user-library-modify",
                                         "user-library-read",
                                         "streaming"});

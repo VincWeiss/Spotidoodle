@@ -1,5 +1,6 @@
 package com.spotidoodle.team13.spotidoodle;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.DatabaseUtils;
 import android.graphics.Color;
@@ -74,6 +75,7 @@ public class SortedPlaylists  extends AppCompatActivity {
     private String playlistTitle;
     private String algorithm;
     private TreeMap <Float, PlaylistTrack> unsortedTracks;
+    private Playlist customCreatedPlaylist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +208,7 @@ public class SortedPlaylists  extends AppCompatActivity {
     };
 
     private void createPlaylistUsingBodyMap() {
-        final String owner = userID.toString();
+        final String owner = userID;
         final String name = this.playlistTitle + " sorted with decreasing " + this.algorithm;
         final boolean isPublic = true;
         final Map<String, Object> options = new HashMap();
@@ -219,26 +221,25 @@ public class SortedPlaylists  extends AppCompatActivity {
             }
 
             @Override
-            public void success(Playlist playlist, Response response) {
-                addTracksToNewPlaylist(playlist.id);
+            public void success(final Playlist playlist, Response response) {
+                if (playlist != null) {
+                    addTracksToNewPlaylist(playlist.id, name);
+                }
             }
         });
     }
 
-    private void addTracksToNewPlaylist(String playlistID) {
-        final int position = 1;
+    private void addTracksToNewPlaylist(String playlistID, String name) {
+        final int position = 0;
+        final String playlistName = name;
         final Map<String, Object> options = new HashMap<>();
         final List<String> trackUris = new ArrayList();
         for (Map.Entry<Float, PlaylistTrack> track : unsortedTracks.entrySet()) {
-            System.out.println("the track credentials: " + track.getValue().track.id);
             trackUris.add(track.getValue().track.uri);
         }
         options.put("uris", trackUris);
-
         final Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put("position", String.valueOf(position));
-        System.out.println("queryParameters: " + queryParameters.entrySet());
-        System.out.println("options: " + options.entrySet());
         spotify.addTracksToPlaylist(userID, playlistID, queryParameters, options, new SpotifyCallback<Pager<PlaylistTrack>>() {
             @Override
             public void failure(SpotifyError spotifyError) {
@@ -247,7 +248,12 @@ public class SortedPlaylists  extends AppCompatActivity {
 
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-                System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + playlistTrackPager.items.size());
+                Context context = getApplicationContext();
+                CharSequence text = "Created new playlist " + playlistName;
+                int duration = Toast.LENGTH_LONG;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
             }
         });
     }
