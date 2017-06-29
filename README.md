@@ -67,7 +67,8 @@ protected void onActivityResult(int requestCode, int resultCode, Intent intent) 
                     Log.d("Auth error: ", response.getType().toString());
             }
         }
-    }```
+    }
+```
     
 ``` WEB API EXAMPLE
 SpotifyApi api = new SpotifyApi();
@@ -88,7 +89,8 @@ spotify.getAlbum("2dIGnmEIy1WZIcZCFSj6i8", new Callback<Album>() {
     public void failure(RetrofitError error) {
         Log.d("Album failure", error.toString());
     }
-});```
+});
+```
 
 ## Built With
 
