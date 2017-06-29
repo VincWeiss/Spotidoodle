@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ public class SortedPlaylists  extends AppCompatActivity {
     private String playlistTitle;
     private String algorithm;
     private TreeMap <Float, PlaylistTrack> unsortedTracks;
+    private boolean isIncreasing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +65,10 @@ public class SortedPlaylists  extends AppCompatActivity {
             this.userID = bundle.getString("userID");
             this.playlistTitle = bundle.getString("playlistTitle");
             this.algorithm = bundle.getString("algorithm");
+            this.isIncreasing = bundle.getBoolean("isIncreasing");
 
         }
+        System.out.println("THE BOOL VALUE AFTER THE ACTIVITY STARTED : " + isIncreasing);
         this.api = new SpotifyApi();
         this.api.setAccessToken(this.ACCSSES_TOKEN);
         spotify = api.getService();
@@ -73,96 +77,67 @@ public class SortedPlaylists  extends AppCompatActivity {
         Button savePlaylist = (Button) findViewById(R.id.saveButton);
         savePlaylist.setBackgroundResource(R.drawable.circle);
         savePlaylist.setOnClickListener(onClickListener);
+        final ImageButton sortPlaylist = (ImageButton) findViewById(R.id.sortButton);
 
-        if (intent.getFlags() == 0) {
-            spotify.getPlaylistTracks(userID, playlist, new Callback<Pager<PlaylistTrack>>() {
-                @Override
-                public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-                    List<PlaylistTrack> playlistTracks = playlistTrackPager.items;
-                    final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
-                    for( final PlaylistTrack track : playlistTracks){
-                        Button song = new Button(SortedPlaylists.this);
-                        setButtonLayout(song);
-                        final TextView value = new TextView((SortedPlaylists.this));
-                        song.setText(track.track.name);
-                        spotify.getTrackAudioFeatures(track.track.id, new Callback<AudioFeaturesTrack>() {
-                            @Override
-                            public void success(AudioFeaturesTrack audioFeaturesTrack, Response response) {
-                                value.setText(algorithm + " value " + String.valueOf(getSortingAlgorithm(algorithm, audioFeaturesTrack)));
-                                setTextLayout(value);
-                            }
-
-                            @Override
-                            public void failure(RetrofitError error) {
-                                error.printStackTrace();
-                            }
-                        });
-                        TableRow row = new TableRow(SortedPlaylists.this);
-                        row.setBackgroundResource(R.drawable.rowlayout);
-                        GridLayout grid = new GridLayout(SortedPlaylists.this);
-                        TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                        grid.addView(song);
-                        grid.addView(value);
-                        row.addView(grid, rowLayout);
-                        playlistTable.addView(row);
-                    }
-                }
-                @Override
-                public void failure(RetrofitError error) {
-                    title.setText("no songs found");
-                    error.printStackTrace();
-                }
-            });
-        } else {
+        if (!this.isIncreasing) {
             this.unsortedTracks = new TreeMap(Collections.reverseOrder());
             final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
-            spotify.getPlaylistTracks(userID, playlist, new Callback<Pager<PlaylistTrack>>() {
-                @Override
-                public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-                    final List<PlaylistTrack> playlistTracks = playlistTrackPager.items;
-                    for (final PlaylistTrack track : playlistTracks) {
-                        spotify.getTrackAudioFeatures(track.track.id, new Callback<AudioFeaturesTrack>() {
-                            @Override
-                            public void success(AudioFeaturesTrack audioFeaturesTrack, Response response) {
-                                unsortedTracks.put(getSortingAlgorithm(algorithm, audioFeaturesTrack), track);
-                                if (playlistTracks.size() == unsortedTracks.size()) {
-                                    for (Map.Entry<Float, PlaylistTrack> track : unsortedTracks.entrySet()) {
-                                        Button song = new Button(SortedPlaylists.this);
-                                        final TextView value = new TextView((SortedPlaylists.this));
-                                        song.setText(track.getValue().track.name);
-                                        setButtonLayout(song);
-                                        value.setText(algorithm + " value " +track.getKey().toString());
-                                        setTextLayout(value);
-                                        TableRow row = new TableRow(SortedPlaylists.this);
-                                        row.setBackgroundResource(R.drawable.rowlayout);
-                                        GridLayout grid = new GridLayout(SortedPlaylists.this);
-                                        TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-                                        grid.addView(song);
-                                        grid.addView(value);
-                                        row.addView(grid, rowLayout);
-                                        playlistTable.addView(row);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void failure(RetrofitError error) {
-                                error.printStackTrace();
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    title.setText("no songs found");
-                    error.printStackTrace();
-                }
-            });
+            displaySortedTracksInTable(playlistTable, title);
+            sortPlaylist.setImageResource(R.drawable.arrow_up_small);
+        } else {
+            this.unsortedTracks = new TreeMap();
+            final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
+            displaySortedTracksInTable(playlistTable, title);
+            sortPlaylist.setImageResource(R.drawable.arrow_down_small);
         }
 
-        final Button sortPlaylist = (Button) findViewById(R.id.sortButton);
         sortPlaylist.setOnClickListener(onClickListener);
+    }
+
+    private void displaySortedTracksInTable(final TableLayout playlistTable, final TextView title) {
+        spotify.getPlaylistTracks(userID, playlist, new Callback<Pager<PlaylistTrack>>() {
+            @Override
+            public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                final List<PlaylistTrack> playlistTracks = playlistTrackPager.items;
+                for (final PlaylistTrack track : playlistTracks) {
+                    spotify.getTrackAudioFeatures(track.track.id, new Callback<AudioFeaturesTrack>() {
+                        @Override
+                        public void success(AudioFeaturesTrack audioFeaturesTrack, Response response) {
+                            unsortedTracks.put(getSortingAlgorithm(algorithm, audioFeaturesTrack), track);
+                            if (playlistTracks.size() == unsortedTracks.size()) {
+                                for (Map.Entry<Float, PlaylistTrack> track : unsortedTracks.entrySet()) {
+                                    Button song = new Button(SortedPlaylists.this);
+                                    final TextView value = new TextView((SortedPlaylists.this));
+                                    song.setText(track.getValue().track.name);
+                                    setButtonLayout(song);
+                                    value.setText(algorithm + " value " +track.getKey().toString());
+                                    setTextLayout(value);
+                                    TableRow row = new TableRow(SortedPlaylists.this);
+                                    row.setBackgroundResource(R.drawable.rowlayout);
+                                    GridLayout grid = new GridLayout(SortedPlaylists.this);
+                                    TableRow.LayoutParams rowLayout = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
+                                    grid.addView(song);
+                                    grid.addView(value);
+                                    row.addView(grid, rowLayout);
+                                    playlistTable.addView(row);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            error.printStackTrace();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                title.setText("no songs found");
+                error.printStackTrace();
+            }
+        });
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -170,8 +145,14 @@ public class SortedPlaylists  extends AppCompatActivity {
         public void onClick(final View v) {
             switch (v.getId()) {
                 case R.id.sortButton:
+                    isIncreasing = !isIncreasing;
+                    System.out.println("BOOLEAN VALUE :   " + isIncreasing);
+                    Intent intent = getIntent();
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("isIncreasing", isIncreasing);
+                    intent.putExtras(bundle);
                     finish();
-                    startActivity(getIntent());
+                    startActivity(intent);
                     break;
                 case R.id.saveButton:
                     createPlaylistUsingBodyMap();

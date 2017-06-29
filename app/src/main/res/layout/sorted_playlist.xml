@@ -11,6 +11,7 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:text="SAVE"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,34 +22,25 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginTop="16dp"
         android:text="your playlist"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/sortButton"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintHorizontal_bias="0.0" />
+        android:layout_marginStart="8dp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/sortButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/buttonstyling"
-        android:text="SORT"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:srcCompat="@mipmap/ic_keyboard_arrow_up_white_36dp" />
 
     <ScrollView
         android:layout_width="0dp"
