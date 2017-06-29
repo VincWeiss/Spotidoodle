@@ -51,6 +51,7 @@ to get the version of your accounts master branch status.
 
 ### And coding style
 
+``` ANDROID SDK
 protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == REQUEST_CODE) {
@@ -67,6 +68,27 @@ protected void onActivityResult(int requestCode, int resultCode, Intent intent) 
             }
         }
     }
+    
+``` WEB API EXAMPLE
+SpotifyApi api = new SpotifyApi();
+
+// Most (but not all) of the Spotify Web API endpoints require authorisation.
+// If you know you'll only use the ones that don't require authorisation you can skip this step
+api.setAccessToken("myAccessToken");
+
+SpotifyService spotify = api.getService();
+
+spotify.getAlbum("2dIGnmEIy1WZIcZCFSj6i8", new Callback<Album>() {
+    @Override
+    public void success(Album album, Response response) {
+        Log.d("Album success", album.name);
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+        Log.d("Album failure", error.toString());
+    }
+});
 
 ## Built With
 
