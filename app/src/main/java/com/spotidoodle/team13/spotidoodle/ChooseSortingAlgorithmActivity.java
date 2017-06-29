@@ -61,11 +61,7 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
                     intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
                     bundle.putString("algorithm", "danceability");
-                    bundle.putString("playlist", playlist);
-                    bundle.putString("playlistUri", playlistUri);
-                    bundle.putString("accessToken", ACCSSES_TOKEN);
-                    bundle.putString("userID", userID);
-                    bundle.putString("playlistTitle", playlistTitle);
+                    setBundleParameters(bundle);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
@@ -73,11 +69,7 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
                     intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
                     bundle.putString("algorithm", "tempo");
-                    bundle.putString("playlist", playlist);
-                    bundle.putString("playlistUri", playlistUri);
-                    bundle.putString("accessToken", ACCSSES_TOKEN);
-                    bundle.putString("userID", userID);
-                    bundle.putString("playlistTitle", playlistTitle);
+                    setBundleParameters(bundle);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
@@ -85,11 +77,7 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
                     intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
                     bundle.putString("algorithm", "energy");
-                    bundle.putString("playlist", playlist);
-                    bundle.putString("playlistUri", playlistUri);
-                    bundle.putString("accessToken", ACCSSES_TOKEN);
-                    bundle.putString("userID", userID);
-                    bundle.putString("playlistTitle", playlistTitle);
+                    setBundleParameters(bundle);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
@@ -97,15 +85,20 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
                     intent = new Intent(ChooseSortingAlgorithmActivity.this, SortedPlaylists.class);
                     bundle = new Bundle();
                     bundle.putString("algorithm", "loudness");
-                    bundle.putString("playlist", playlist);
-                    bundle.putString("playlistUri", playlistUri);
-                    bundle.putString("accessToken", ACCSSES_TOKEN);
-                    bundle.putString("userID", userID);
-                    bundle.putString("playlistTitle", playlistTitle);
+                    setBundleParameters(bundle);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
             }
         }
     };
+
+    private void setBundleParameters(Bundle bundle) {
+        bundle.putString("playlist", playlist);
+        bundle.putString("playlistUri", playlistUri);
+        bundle.putString("accessToken", ACCSSES_TOKEN);
+        bundle.putString("userID", userID);
+        bundle.putString("playlistTitle", playlistTitle);
+        bundle.putBoolean("isIncreasing", false);
+    }
 }
