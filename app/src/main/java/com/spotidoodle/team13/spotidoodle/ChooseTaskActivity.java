@@ -35,6 +35,7 @@ public class ChooseTaskActivity  extends AppCompatActivity {
     private String ACCSSES_TOKEN;
     private String userID;
     private String playlistTitle;
+    private String ownerID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class ChooseTaskActivity  extends AppCompatActivity {
             this.ACCSSES_TOKEN = bundle.getString("accessToken");
             this.userID = bundle.getString("userID");
             this.playlistTitle = bundle.getString("playlistTitle");
+            this.ownerID = bundle.getString("ownerID");
         }
         System.out.println("_____________________________" + ACCSSES_TOKEN);
         final Button sortPlaylist = (Button) findViewById(R.id.sortMusicButton);
@@ -85,6 +87,7 @@ public class ChooseTaskActivity  extends AppCompatActivity {
                     bundle.putInt("requestCode", REQUEST_CODE);
                     bundle.putString("accessToken", ACCSSES_TOKEN);
                     bundle.putString("userID", userID);
+                    bundle.putString("ownerID", ownerID);
                     bundle.putString("playlistTitle", playlistTitle);
                     intent.putExtras(bundle);
                     startActivity(intent);

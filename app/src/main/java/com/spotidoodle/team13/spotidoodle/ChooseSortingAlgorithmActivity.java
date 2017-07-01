@@ -22,6 +22,7 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
     private String ACCSSES_TOKEN;
     private String userID;
     private String playlistTitle;
+    private String ownerID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
             this.ACCSSES_TOKEN = bundle.getString("accessToken");
             this.userID = bundle.getString("userID");
             this.playlistTitle = bundle.getString("playlistTitle");
+            this.ownerID = bundle.getString("ownerID");
         }
 
         final Button danceability = (Button) findViewById(R.id.algorithmDance);
@@ -99,6 +101,7 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
         bundle.putString("accessToken", ACCSSES_TOKEN);
         bundle.putString("userID", userID);
         bundle.putString("playlistTitle", playlistTitle);
+        bundle.putString("ownerID", ownerID);
         bundle.putBoolean("isIncreasing", false);
     }
 }

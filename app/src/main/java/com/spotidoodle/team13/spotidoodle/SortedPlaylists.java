@@ -50,6 +50,7 @@ public class SortedPlaylists  extends AppCompatActivity {
     private String algorithm;
     private TreeMap <Float, PlaylistTrack> unsortedTracks;
     private boolean isIncreasing;
+    private String ownerID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +67,10 @@ public class SortedPlaylists  extends AppCompatActivity {
             this.playlistTitle = bundle.getString("playlistTitle");
             this.algorithm = bundle.getString("algorithm");
             this.isIncreasing = bundle.getBoolean("isIncreasing");
+            this.ownerID = bundle.getString("ownerID");
 
         }
-        System.out.println("THE BOOL VALUE AFTER THE ACTIVITY STARTED : " + isIncreasing);
+        System.out.println("OWNER ID    : " + ownerID);
         this.api = new SpotifyApi();
         this.api.setAccessToken(this.ACCSSES_TOKEN);
         spotify = api.getService();
@@ -83,11 +85,13 @@ public class SortedPlaylists  extends AppCompatActivity {
             this.unsortedTracks = new TreeMap(Collections.reverseOrder());
             final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
             displaySortedTracksInTable(playlistTable, title);
+            playlistTable.refreshDrawableState();
             sortPlaylist.setImageResource(R.drawable.arrow_up_small);
         } else {
             this.unsortedTracks = new TreeMap();
             final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
             displaySortedTracksInTable(playlistTable, title);
+            playlistTable.refreshDrawableState();
             sortPlaylist.setImageResource(R.drawable.arrow_down_small);
         }
 
@@ -95,7 +99,7 @@ public class SortedPlaylists  extends AppCompatActivity {
     }
 
     private void displaySortedTracksInTable(final TableLayout playlistTable, final TextView title) {
-        spotify.getPlaylistTracks(userID, playlist, new Callback<Pager<PlaylistTrack>>() {
+        spotify.getPlaylistTracks(ownerID, playlist, new Callback<Pager<PlaylistTrack>>() {
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
                 final List<PlaylistTrack> playlistTracks = playlistTrackPager.items;
