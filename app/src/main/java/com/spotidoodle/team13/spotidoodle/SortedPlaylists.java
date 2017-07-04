@@ -2,6 +2,7 @@ package com.spotidoodle.team13.spotidoodle;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -50,11 +51,20 @@ public class SortedPlaylists  extends AppCompatActivity {
     private String algorithm;
     private TreeMap <Float, PlaylistTrack> unsortedTracks;
     private boolean isIncreasing;
+    private String ownerID;
 
+    /**
+     * called when on activity start
+     * gets the intent and the bundle with extras and gets again the spotify authentication request as
+     * in MainActivity. Defines the buttons and functionality
+     * checks if the algorithm has to sort decreasing or increasing
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sorted_playlist);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -66,9 +76,9 @@ public class SortedPlaylists  extends AppCompatActivity {
             this.playlistTitle = bundle.getString("playlistTitle");
             this.algorithm = bundle.getString("algorithm");
             this.isIncreasing = bundle.getBoolean("isIncreasing");
+            this.ownerID = bundle.getString("ownerID");
 
         }
-        System.out.println("THE BOOL VALUE AFTER THE ACTIVITY STARTED : " + isIncreasing);
         this.api = new SpotifyApi();
         this.api.setAccessToken(this.ACCSSES_TOKEN);
         spotify = api.getService();
@@ -83,19 +93,26 @@ public class SortedPlaylists  extends AppCompatActivity {
             this.unsortedTracks = new TreeMap(Collections.reverseOrder());
             final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
             displaySortedTracksInTable(playlistTable, title);
+            playlistTable.refreshDrawableState();
             sortPlaylist.setImageResource(R.drawable.arrow_up_small);
         } else {
             this.unsortedTracks = new TreeMap();
             final TableLayout playlistTable = (TableLayout) findViewById(R.id.playlistTable);
             displaySortedTracksInTable(playlistTable, title);
+            playlistTable.refreshDrawableState();
             sortPlaylist.setImageResource(R.drawable.arrow_down_small);
         }
 
         sortPlaylist.setOnClickListener(onClickListener);
     }
 
+    /**
+     * gets the sorted playlisttracks and displays the tracks in the table layout
+     * @param playlistTable
+     * @param title
+     */
     private void displaySortedTracksInTable(final TableLayout playlistTable, final TextView title) {
-        spotify.getPlaylistTracks(userID, playlist, new Callback<Pager<PlaylistTrack>>() {
+        spotify.getPlaylistTracks(ownerID, playlist, new Callback<Pager<PlaylistTrack>>() {
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
                 final List<PlaylistTrack> playlistTracks = playlistTrackPager.items;
@@ -140,13 +157,17 @@ public class SortedPlaylists  extends AppCompatActivity {
         });
     }
 
+    /**
+     * this method is triggered when button is clicked
+     * the sort button reloads the activity with the opposite if isIncreasing true | false
+     * the save button triggers the method create playlist so that a new playlist is created and the tracks can be added to it
+     */
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
             switch (v.getId()) {
                 case R.id.sortButton:
                     isIncreasing = !isIncreasing;
-                    System.out.println("BOOLEAN VALUE :   " + isIncreasing);
                     Intent intent = getIntent();
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("isIncreasing", isIncreasing);
@@ -160,6 +181,11 @@ public class SortedPlaylists  extends AppCompatActivity {
         }
     };
 
+    /**
+     * creates map with the user credentials (name of the owner, public true | false, etc
+     * spotify service created the new playlist
+     * on success the addTrack method is called
+     */
     private void createPlaylistUsingBodyMap() {
         final String owner = userID;
         final String name = this.playlistTitle + " sorted with decreasing " + this.algorithm;
@@ -182,6 +208,12 @@ public class SortedPlaylists  extends AppCompatActivity {
         });
     }
 
+    /**
+     * created map with the song uris to add to the playlist
+     * spotify service is putting the songs to the selected playlist
+     * @param playlistID
+     * @param name
+     */
     private void addTracksToNewPlaylist(String playlistID, String name) {
         final int position = 0;
         final String playlistName = name;
@@ -189,6 +221,7 @@ public class SortedPlaylists  extends AppCompatActivity {
         final List<String> trackUris = new ArrayList();
         for (Map.Entry<Float, PlaylistTrack> track : unsortedTracks.entrySet()) {
             trackUris.add(track.getValue().track.uri);
+            System.out.println(track.getValue().track.uri);
         }
         options.put("uris", trackUris);
         final Map<String, Object> queryParameters = new HashMap<>();
@@ -211,6 +244,13 @@ public class SortedPlaylists  extends AppCompatActivity {
         });
     }
 
+    /**
+     * gets the parameter which was chosen for the sorting algorithm and returns the
+     * value of the track with the songanalyser
+     * @param algorithm
+     * @param analyser
+     * @return
+     */
     private Float getSortingAlgorithm(String algorithm, AudioFeaturesTrack analyser) {
         switch (algorithm) {
             case "danceability":
@@ -225,6 +265,10 @@ public class SortedPlaylists  extends AppCompatActivity {
         return Float.valueOf("0.0");
     }
 
+    /**
+     * new button layout for all buttons in the table layout
+     * @param button
+     */
     private void setButtonLayout(Button button){
         //button.setBackgroundResource(R.drawable.buttonstyling); blue radiant background
         button.setAlpha((float) 0.8);
@@ -234,6 +278,10 @@ public class SortedPlaylists  extends AppCompatActivity {
         button.setWidth((width/5) * 3);
     }
 
+    /**
+     * new text layout for all texts in the table layout
+     * @param text
+     */
     private void setTextLayout(TextView text) {
         text.setBackgroundResource(R.drawable.textstyling);
         text.setAlpha((float) 0.7);

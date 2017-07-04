@@ -1,5 +1,6 @@
 package com.spotidoodle.team13.spotidoodle;
 
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,19 +41,25 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
     //SHA1 Fingerprint 3D:5B:E8:6A:56:D1:FF:EC:91:AB:A8:27:50:13:A1:A6:85:35:CA:F6
     private static final String CLIENT_ID = "9f703a39b15a4241b08dcea6685e5f50";
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
-    private Player mPlayer;
-
     private static final int REQUEST_CODE = 1337;
     private Pager<PlaylistSimple> myPlaylists;
     private UserPrivate user;
     private SpotifyApi api;
     private String ACCSSES_TOKEN;
     private String userID;
+    private Player mPlayer;
 
+    /**
+     * first method calles on activity start, loads the drawable resources and layout
+     * generates the authentication builder with the set of scopes (also permissions) that the app gets
+     * then opens the spotify login activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
                 AuthenticationResponse.Type.TOKEN,
@@ -69,6 +76,14 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
+    /**
+     * method from the connection state callback, checks if the authentication was successfully
+     * if response gets token then start the onAuthenticationComplete method
+     * if not print the error stacktrace
+     * @param requestCode
+     * @param resultCode
+     * @param intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -87,6 +102,13 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         }
     }
 
+    /**
+     * checks if authentication was successfully completed
+     * here we create the spotify api and the spotify service instance to get the user private data
+     * getMe is a spotify service method and always needs a callback
+     * here we create the player instance
+     * @param authResponse
+     */
     private void onAuthenticationComplete(final AuthenticationResponse authResponse) {
         this.api = new SpotifyApi();
         this.api.setAccessToken(authResponse.getAccessToken());
@@ -131,6 +153,11 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         }
     }
 
+    /**
+     * queue the user private, public and collaborative playlists
+     * uses the spotify web api and the spotify service to queue the playlists
+     * @param spotify
+     */
     private void getUserPlaylists(final SpotifyService spotify) {
         spotify.getMyPlaylists(new Callback<Pager<PlaylistSimple>>() {
             @Override
@@ -152,11 +179,13 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
                             Bundle bundle = new Bundle();
                             bundle.putString("playlist", myPlaylists.items.get(iterator).id);
                             bundle.putString("playlistUri", myPlaylists.items.get(iterator).uri);
+                            bundle.putString("ownerID", myPlaylists.items.get(iterator).owner.id);
                             bundle.putString("clientID", CLIENT_ID);
                             bundle.putInt("requestCode", REQUEST_CODE);
                             bundle.putString("accessToken", ACCSSES_TOKEN);
                             bundle.putString("userID", userID);
                             bundle.putString("playlistTitle", myPlaylists.items.get(iterator).name);
+                            bundle.putString("playlistID", myPlaylists.items.get(iterator).id);
                             intent.putExtras(bundle);
                             startActivity(intent);
                         }
@@ -181,21 +210,31 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         });
     }
 
+    /**
+     * if player is not used anymore
+     */
     @Override
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
         super.onDestroy();
     }
 
+    /**
+     *if player functionality is changing, like skip to next song
+     * @param playerEvent
+     */
     @Override
     public void onPlaybackEvent(PlayerEvent playerEvent) {
-        Log.d("MainActivity", "Playback event received: " + playerEvent.name());
         switch (playerEvent) {
             default:
                 break;
         }
     }
 
+    /**
+     * if player has an error
+     * @param error
+     */
     @Override
     public void onPlaybackError(Error error) {
         Log.d("MainActivity", "Playback error received: " + error.name());
@@ -205,6 +244,9 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         }
     }
 
+    /**
+     * if user is logged in and player is receiving data
+     */
     @Override
     public void onLoggedIn() {
         mPlayer.addNotificationCallback(new Player.NotificationCallback() {
@@ -221,21 +263,35 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
         });
     }
 
+    /**
+     * if user is logged out
+     */
     @Override
     public void onLoggedOut() {
         Log.d("MainActivity", "User logged out");
     }
 
+    /**
+     * if user can't be logged in
+     * @param e
+     */
     @Override
     public void onLoginFailed(Error e) {
         Log.d("MainActivity", "Login failed");
     }
 
+    /**
+     * if an error occurred
+     */
     @Override
     public void onTemporaryError() {
         Log.d("MainActivity", "Temporary error occurred");
     }
 
+    /**
+     * get the connection message
+     * @param message
+     */
     @Override
     public void onConnectionMessage(String message) {
         Log.d("MainActivity", "Received connection message: " + message);
