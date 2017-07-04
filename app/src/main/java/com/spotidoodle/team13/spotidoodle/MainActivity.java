@@ -37,7 +37,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity implements SpotifyPlayer.NotificationCallback, ConnectionStateCallback {
-    
+
     private static final String CLIENT_ID = "9f703a39b15a4241b08dcea6685e5f50";
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
     private static final int REQUEST_CODE = 1337;
