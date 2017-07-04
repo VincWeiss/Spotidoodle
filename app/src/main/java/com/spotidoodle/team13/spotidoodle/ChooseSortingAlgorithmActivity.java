@@ -1,6 +1,7 @@
 package com.spotidoodle.team13.spotidoodle;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,27 +15,28 @@ import kaaes.spotify.webapi.android.models.AudioFeaturesTrack;
 
 public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
 
-    private String CLIENT_ID;
     private String playlist;
     private String playlistUri;
-    private AudioFeaturesTrack trackAnalyser;
-    private int REQUEST_CODE;
     private String ACCSSES_TOKEN;
     private String userID;
     private String playlistTitle;
     private String ownerID;
 
+    /**
+     * on activity start this method is called
+     * gets the intent and the bundle with extras which are sored in the intent
+     * defines the buttons
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_algorithm);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        this.trackAnalyser = new AudioFeaturesTrack();
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            this.CLIENT_ID = bundle.getString("clientID");
-            this.REQUEST_CODE = bundle.getInt("requestCode");
             this.playlist = bundle.getString("playlist");
             this.playlistUri =  bundle.get("playlistUri").toString();
             this.ACCSSES_TOKEN = bundle.getString("accessToken");
@@ -53,6 +55,11 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
         loudness.setOnClickListener(onClickListener);
     }
 
+    /**
+     * called on button clicked
+     * created a new intent with a bundle and parameters the
+     * next activity needs and starts the next activity
+     */
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
@@ -95,6 +102,11 @@ public class ChooseSortingAlgorithmActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * defines the parameters a bundle needs, for all intent in the class
+     * called on every button click
+     * @param bundle
+     */
     private void setBundleParameters(Bundle bundle) {
         bundle.putString("playlist", playlist);
         bundle.putString("playlistUri", playlistUri);

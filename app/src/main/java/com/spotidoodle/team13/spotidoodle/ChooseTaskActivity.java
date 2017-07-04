@@ -1,6 +1,7 @@
 package com.spotidoodle.team13.spotidoodle;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -36,11 +37,19 @@ public class ChooseTaskActivity  extends AppCompatActivity {
     private String userID;
     private String playlistTitle;
     private String ownerID;
+    private String playlistID;
 
+    /**
+     * on activity start this method is called
+     * gets the intent and the bundle with extras which are sored in the intent
+     * defines the buttons
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_task);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -53,14 +62,19 @@ public class ChooseTaskActivity  extends AppCompatActivity {
             this.userID = bundle.getString("userID");
             this.playlistTitle = bundle.getString("playlistTitle");
             this.ownerID = bundle.getString("ownerID");
+            this.playlistID = bundle.getString("playlistID");
         }
-        System.out.println("_____________________________" + ACCSSES_TOKEN);
         final Button sortPlaylist = (Button) findViewById(R.id.sortMusicButton);
         final Button sortMusic = (Button) findViewById(R.id.sortPlaylistButton);
         sortPlaylist.setOnClickListener(onClickListener);
         sortMusic.setOnClickListener(onClickListener);
     }
 
+    /**
+     * called on button clicked
+     * created a new intent with a bundle and parameters the
+     * next activity needs and starts the next activity
+     */
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
@@ -75,6 +89,10 @@ public class ChooseTaskActivity  extends AppCompatActivity {
                     bundle.putString("clientID", CLIENT_ID);
                     bundle.putInt("requestCode", REQUEST_CODE);
                     bundle.putString("accessToken", ACCSSES_TOKEN);
+                    bundle.putString("userID", userID);
+                    bundle.putString("playlistUri", playlistUri);
+                    bundle.putString("playlistID", playlistID);
+                    bundle.putString("playlistTitle", playlistTitle);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     break;
