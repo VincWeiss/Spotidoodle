@@ -276,6 +276,13 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         button.setMinimumHeight((height - findViewById(R.id.header).getHeight() - findViewById(R.id.info_bg).getHeight()) / 4);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        mPlayer.pause(mOperationCallback);
+    }
+
     /**
      * called when spotofy player is not used anymore
      */
