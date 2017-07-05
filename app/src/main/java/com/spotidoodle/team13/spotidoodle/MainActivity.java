@@ -38,7 +38,6 @@ import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity implements SpotifyPlayer.NotificationCallback, ConnectionStateCallback {
 
-    //SHA1 Fingerprint 3D:5B:E8:6A:56:D1:FF:EC:91:AB:A8:27:50:13:A1:A6:85:35:CA:F6
     private static final String CLIENT_ID = "9f703a39b15a4241b08dcea6685e5f50";
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
     private static final int REQUEST_CODE = 1337;
@@ -120,10 +119,16 @@ public class MainActivity extends AppCompatActivity implements SpotifyPlayer.Not
             @Override
             public void success(UserPrivate userPrivate, Response response) {
                 user = userPrivate;
-                userName.setText(user.display_name.toString());
-                String imageURL = user.images.get(0).url;
+                if (user.display_name != null) {
+                    userName.setText(user.display_name.toString());
+                } else {
+                    userName.setText(user.id.toString());
+                }
+                if (user.images.size() > 0) {
+                    String imageURL = user.images.get(0).url;
+                    Picasso.with(getApplicationContext()).load(imageURL).transform( new CircleTransform()).into(userImage);
+                }
                 userID = userPrivate.id;
-                Picasso.with(getApplicationContext()).load(imageURL).transform( new CircleTransform()).into(userImage);
             }
 
             @Override

@@ -38,8 +38,11 @@ import kaaes.spotify.webapi.android.SpotifyCallback;
 import kaaes.spotify.webapi.android.SpotifyError;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.TrackToRemove;
+import retrofit.Callback;
+import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
@@ -57,7 +60,7 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
     private String ACCSSES_TOKEN;
     private String userID;
     private String playlistID;
-    private String toSavePlaylistID = "58CX5jqRdj4DIZHDrqSNJL";
+    private String toSavePlaylistID;
     private String playlistTitle;
     private int REQUEST_CODE;
     private static final String REDIRECT_URI = "http://spotidoodle2.com/callback/";
@@ -162,7 +165,6 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         this.api = new SpotifyApi();
         this.api.setAccessToken(this.ACCSSES_TOKEN);
         spotify = api.getService();
-        System.out.println("spotifySERVICE " + spotify.toString());
         if (mPlayer == null) {
             Config playerConfig = new Config(getApplicationContext(), authResponse.getAccessToken(), CLIENT_ID);
             mPlayer = Spotify.getPlayer(playerConfig, this, new SpotifyPlayer.InitializationObserver() {
@@ -200,7 +202,18 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
                     mPlayer.setShuffle(mOperationCallback, true);
                     break;
                 case R.id.imageButtonFave:
-                    addTracksToNewPlaylist(playlistID, toSavePlaylistID, mPlayer.getMetadata().currentTrack.uri);
+                    spotify.getMyPlaylists(new Callback<Pager<PlaylistSimple>>() {
+                        @Override
+                        public void success(Pager<PlaylistSimple> playlistSimplePager, Response response) {
+                            toSavePlaylistID = playlistSimplePager.items.get(0).id;
+                            addTracksToNewPlaylist(toSavePlaylistID, mPlayer.getMetadata().currentTrack.uri);
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            error.printStackTrace();
+                        }
+                    });
                     break;
                 case R.id.imageButtonSeek:
                     mPlayer.seekToPosition(mOperationCallback, 60000);
@@ -233,13 +246,12 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
      * called when the button imageButtonFave has been clicked
      * creates a HashMap and a List and calls the addTracksToPlaylist of spotify service
      * @param playlistID
-     * @param name
      * @param trackUri
      */
-    private void addTracksToNewPlaylist(String playlistID, final String name, String trackUri) {
+    private void addTracksToNewPlaylist(String playlistID, String trackUri) {
         System.out.println("SPOTIFYTRACK : " + trackUri);
         final int position = 0;
-        final String playlistName = name;
+        //final String playlistName = name;
         final Map<String, Object> options = new HashMap();
         final List<String> trackUris = Arrays.asList(trackUri);
         options.put("uris", trackUris);
@@ -274,6 +286,13 @@ public class SortMusicActivity extends AppCompatActivity implements SpotifyPlaye
         int height = dm.heightPixels;
         button.setMinimumWidth((width/2));
         button.setMinimumHeight((height - findViewById(R.id.header).getHeight() - findViewById(R.id.info_bg).getHeight()) / 4);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        mPlayer.pause(mOperationCallback);
     }
 
     /**
